@@ -1,4 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GURU
+
+GURU is an AI-powered yoga chatbot that provides personalized guidance on asanas, meditation, and wellness. It leverages advanced natural language processing and embeddings to assist users in their yoga journey, helping them find balance, flexibility, and mindfulness anytime, anywhere.
+
+## Features
+
+- **Personalized Yoga Guidance**: Get tailored advice on yoga poses and practices based on your needs.
+- **Meditation Support**: Receive guidance on meditation techniques to enhance your mental well-being.
+- **Wellness Tips**: Access tips and information on maintaining a healthy lifestyle through yoga.
+- **Interactive Chat**: Engage in a conversational interface that makes learning about yoga easy and enjoyable.
+- **Source References**: Provides sources for responses to ensure transparency and reliability.
+- **Real-Time Streaming**: Supports real-time response streaming for a seamless user experience.
+
+## Technologies Used
+
+- **Next.js**: A React framework for building server-side rendered applications.
+- **Vercel AI SDK**: Simplifies AI integration for building conversational interfaces.
+- **Pinecone**: A vector database for efficient similarity search and embeddings storage.
+- **GroqCloud**:A high-performance AI inference service with an ultra-fast Language Processing Unit, provides fast, low latency API access to state-of-the-art models.
+- **LangChain**: For document loading and text splitting.
+- **Hugging Face Transformers**: For generating embeddings using pre-trained models.
+- **Tailwind CSS**: A utility-first CSS framework for styling the application.
+- **React Markdown**: For rendering markdown content in the chat interface.
+
+## Installation
+
+To get started with GURU, follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/guru.git
+   cd guru
+   ```
+
+2. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Set up your environment variables:
+   Create a `.env` file in the root directory and add the following variables:
+
+   ```plaintext
+   PINECONE_API_KEY=your_pinecone_api_key
+   PINECONE_INDEX_NAME=your_pinecone_index_name
+   PINECONE_ENVIRONMENT=your_pinecone_environment
+   HUGGINGFACE_API_KEY=your_hf_api_key
+   GROQ_API_KEY=your_groq_api_key
+   ```
 
 ## Getting Started
 
@@ -6,31 +56,61 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
+
+- **Chat API**: Handles user queries and generates responses using embeddings and context.
+  - File: [`src/app/api/chat/route.ts`](src/app/api/chat/route.ts)
+- **Store API**: Processes and stores document embeddings in Pinecone.
+  - File: [`src/app/api/store/route.ts`](src/app/api/store/route.ts)
+
+## Deployment
+
+To deploy GURU, follow these steps:
+
+1. Build the application:
+
+   ```bash
+   npm run build
+   ```
+
+2. Start the production server:
+
+   ```bash
+   npm start
+   ```
+
+3. Alternatively, deploy on platforms like [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/).
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project, check out the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
+- [Vercel AI SDK Documentation](https://vercel.com/docs/ai) - Learn how to integrate AI into your applications.
+- [Pinecone Documentation](https://docs.pinecone.io/) - Learn about vector databases and similarity search.
+- [Groq Documentation](https://groq.dev/) - Learn about querying and data handling with Groq.
+- [LangChain Documentation](https://docs.langchain.com/) - Learn about text processing and embeddings.
+- [Hugging Face Transformers](https://huggingface.co/docs/transformers/) - Learn about pre-trained models for NLP tasks.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Usage
 
-## Deploy on Vercel
+Simply type your questions or prompts related to yoga in the chat interface, and GURU will provide you with responses based on its training and the context you provide.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+Contributions are welcome! If you have ideas or improvements, feel free to open an issue or submit a pull request.
+
+## License
+
+This project is Open Source.
+
+## Acknowledgments
+
+- Special thanks to the authors of the book "Yoga Mudras for Physical and Mental Healthcare" for inspiring this project.
