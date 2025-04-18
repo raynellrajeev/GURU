@@ -113,4 +113,4 @@ This project is Open Source.
 
 ## Acknowledgments
 
-- Special thanks to the authors of the book "Yoga Mudras for Physical and Mental Healthcare" for inspiring this project.
+- Special thanks to Dr.S.N Kumar and Dr.A.Jaiganesh, the authors of the book "Yoga Mudras for Physical and Mental Healthcare" for inspiring this project.
