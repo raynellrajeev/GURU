@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { useChat, Message } from "@ai-sdk/react";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
-import Bubble from "./components/Bubble";
-import PromptSuggestionRow from "./components/PromptSuggestionRow";
-import LoadingBubble from "./components/LoadingBubble";
-import MarkdownRenderer from "./components/MarkdownRenderer";
+import Bubble from "../components/Bubble";
+import PromptSuggestionRow from "../components/PromptSuggestionRow";
+import LoadingBubble from "../components/LoadingBubble";
+import MarkdownRenderer from "../components/MarkdownRenderer";
 
 type Source = {
   text: string;
