@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import React, { useState } from "react";
 import { useChat, Message } from "@ai-sdk/react";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -69,16 +70,14 @@ export default function Home() {
       <section
         className={`flex flex-col justify-center gap-6 overflow-hidden h-full py-8 px-2 w-3/5 ${
           noMessages ? "" : "justify-end"
-        }`}
-      >
+        }`}>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
             <strong>Error:</strong> {error.message}
             <button
               type="button"
               onClick={() => setError(null)}
-              className="absolute top-0 right-0 px-2 py-1"
-            >
+              className="absolute top-0 right-0 px-2 py-1">
               ×
             </button>
           </div>
@@ -94,7 +93,9 @@ export default function Home() {
         ) : (
           <>
             {messages.map((message, index) => (
-              <div key={`message-${index}`} className="flex flex-col gap-2">
+              <div
+                key={`message-${index}`}
+                className="flex flex-col gap-2">
                 {message.role === "user" ? (
                   <Bubble message={message} />
                 ) : (
@@ -108,7 +109,9 @@ export default function Home() {
                   <div className="flex flex-col gap-1 mt-1 ml-4 text-sm text-neutral-300">
                     <span>Sources:</span>
                     {sources.map((source, i) => (
-                      <div key={`source-${i}`} className="ml-2">
+                      <div
+                        key={`source-${i}`}
+                        className="ml-2">
                         - {source.text} (Score: {source.score.toFixed(2)})
                       </div>
                     ))}
@@ -122,7 +125,9 @@ export default function Home() {
           </>
         )}
 
-        <form onSubmit={handleSubmit} className="w-full flex gap-1.5 mt-4">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full flex gap-1.5 mt-4">
           <input
             type="text"
             className="flex-1 bg-neutral-700 text-white text-lg px-4 rounded-2xl focus:outline-none focus:ring-1 focus:ring-neutral-300 h-auto"
@@ -141,8 +146,7 @@ export default function Home() {
                 ? "bg-neutral-400 cursor-not-allowed"
                 : "bg-neutral-300 hover:bg-white"
             }`}
-            disabled={status === "submitted" || status === "streaming"}
-          >
+            disabled={status === "submitted" || status === "streaming"}>
             {status === "submitted" || status === "streaming" ? (
               <StopRoundedIcon style={{ color: "black" }} />
             ) : (

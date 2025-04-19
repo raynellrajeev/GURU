@@ -58,11 +58,11 @@ export async function POST(request: Request) {
 
     // Generate streaming response using Groq via AI SDK
     const stream = await streamText({
-      model: groq("gemma2-9b-it"),
+      model: groq("llama-3.3-70b-versatile"),
       system: "You are GURU, a yoga expert assistant.",
       prompt: prompt,
       temperature: 0.7,
-      maxTokens: 500,
+      maxTokens: 2000,
     });
 
     // Create a TransformStream to append sources
