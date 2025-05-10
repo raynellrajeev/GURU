@@ -1,7 +1,11 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { pipeline } from "@xenova/transformers";
-import { streamText } from "ai";
-import { groq } from "@ai-sdk/groq";
+import { streamText, LanguageModelV1 } from "ai";
+import {
+  google,
+  createGoogleGenerativeAI,
+  GoogleGenerativeAIProvider,
+} from "@ai-sdk/google";
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +14,11 @@ export async function POST(request: Request) {
 
     const latestMessage = messages[messages.length - 1].content;
     console.log("Processing query:", latestMessage);
+
+    const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY!,
+    });
+    const model: LanguageModelV1 = google("gemini-1.5-flash");
 
     // Pinecone + Embeddings
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
@@ -32,6 +41,7 @@ export async function POST(request: Request) {
       .map((m) => m.metadata?.text)
       .filter((text): text is string => text != null)
       .join("\n---\n");
+
     const prompt = `You are GURU, a yoga master.
       You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga — including asanas (postures), pranayama (breath control), dhyana (meditation), philosophy, and Ayurvedic wellness.
 
@@ -41,7 +51,7 @@ export async function POST(request: Request) {
       ${context}
 
       Respond with markdown formatting with line break after every paragraph and follow this structure :
-      - Use **headings** for sections
+      
       - Use bullet points and subheadings for clarity
       - add an empty line after each paragraph
       - Correct Sanskrit names in *italics*
@@ -56,13 +66,13 @@ export async function POST(request: Request) {
       score: m.score,
     }));
 
-    // Generate streaming response using Groq via AI SDK
-    const stream = await streamText({
-      model: groq("llama-3.3-70b-versatile"),
+    // Generate streaming response using Google Gen AI via AI SDK
+    const stream = streamText({
+      model: model,
       system: "You are GURU, a yoga expert assistant.",
       prompt: prompt,
       temperature: 0.7,
-      maxTokens: 2000,
+      maxTokens: 5000,
     });
 
     // Create a TransformStream to append sources
@@ -87,7 +97,7 @@ export async function POST(request: Request) {
     return new Response(streamResponse, {
       headers: {
         "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
+        // "Cache-Control": "no-cache",
         Connection: "keep-alive",
       },
     });

@@ -4,7 +4,10 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+import { google, GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
+import { generateText, embed } from "ai";
+
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   try {
