@@ -2,7 +2,6 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { pipeline } from "@xenova/transformers";
 import { streamText, LanguageModelV1 } from "ai";
 import {
-  google,
   createGoogleGenerativeAI,
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
@@ -22,6 +21,10 @@ export async function POST(request: Request) {
 
     // Pinecone + Embeddings
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
+    const embeddingModel = google.textEmbeddingModel("text-embedding-004", {
+      //default dimension = 768
+      taskType: "SEMANTIC_SIMILARITY",
+    });
     const embedder = await pipeline(
       "feature-extraction",
       "Xenova/all-MiniLM-L6-v2"

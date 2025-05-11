@@ -3,9 +3,7 @@ import { pipeline } from "@xenova/transformers";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { NextResponse } from "next/server";
-
-import { google, GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
-import { generateText, embed } from "ai";
+import { google } from "@ai-sdk/google";
 
 export const runtime = "edge";
 
@@ -13,6 +11,10 @@ export async function POST(request: Request) {
   try {
     const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
+    });
+    const embeddingModel = google.textEmbeddingModel("text-embedding-004", {
+      //default dimension = 768
+      taskType: "RETRIEVAL_DOCUMENT",
     });
     const embedder = await pipeline(
       "feature-extraction",
