@@ -21,10 +21,7 @@ export async function POST(request: Request) {
 
     // Pinecone + Embeddings
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-    const embeddingModel = google.textEmbeddingModel("text-embedding-004", {
-      //default dimension = 768
-      taskType: "SEMANTIC_SIMILARITY",
-    });
+    
     const embedder = await pipeline(
       "feature-extraction",
       "Xenova/all-MiniLM-L6-v2"
@@ -70,13 +67,13 @@ export async function POST(request: Request) {
     }));
 
     // Generate streaming response using Google Gen AI via AI SDK
-    const stream = streamText({
+    const stream = await streamText({
       model: model,
       system: "You are GURU, a yoga expert assistant.",
       prompt: prompt,
       temperature: 0.7,
       maxTokens: 5000,
-    });
+    }) ;
 
     // Create a TransformStream to append sources
     const transformStream = new TransformStream({

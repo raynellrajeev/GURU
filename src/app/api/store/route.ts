@@ -1,28 +1,21 @@
 import { Pinecone } from "@pinecone-database/pinecone";
-import { pipeline } from "@xenova/transformers";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { NextResponse } from "next/server";
+import { embed } from "ai";
 import { google } from "@ai-sdk/google";
 
 export const runtime = "edge";
+const BATCH_SIZE = 10;
 
 export async function POST(request: Request) {
   try {
+    // Initialize Pinecone
     const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
     });
-    const embeddingModel = google.textEmbeddingModel("text-embedding-004", {
-      //default dimension = 768
-      taskType: "RETRIEVAL_DOCUMENT",
-    });
-    const embedder = await pipeline(
-      "feature-extraction",
-      "Xenova/all-MiniLM-L6-v2",
-      {
-        quantized: true,
-      }
-    );
+
+    // Load and pre-process the book
     const loader = new PDFLoader("public/documents/yoga_guide.pdf");
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
@@ -35,31 +28,48 @@ export async function POST(request: Request) {
         !doc.pageContent.toLowerCase().includes("all rights reserved")
     );
 
-    const embeddings = await Promise.all(
-      yogaContent.map(async (doc) => {
-        const output = await embedder(doc.pageContent, {
-          pooling: "mean",
-          normalize: true,
-        });
-        return Array.from(output.data);
-      })
-    );
+    // Batch processing
+    const vectors = [];
+    for (let i = 0; i < yogaContent.length; i += BATCH_SIZE) {
+      const batch = yogaContent.slice(i, i + BATCH_SIZE);
 
-    const vectors = yogaContent.map((doc, idx) => ({
-      id: `vec-${Date.now()}-${idx}`,
-      values: embeddings[idx],
-      metadata: {
-        text: doc.pageContent,
-        source: "yoga_guide.pdf",
-        chunk: idx,
-      },
-    }));
+      // Generate embeddings in parallel
+      const batchEmbeddings = await Promise.all(
+        batch.map(async (doc, idx) => {
+          const { embedding } = await embed({
+            model: google.textEmbeddingModel("text-embedding-004", {
+              taskType: "RETRIEVAL_DOCUMENT",
+            }),
+            value: doc.pageContent,
+          });
+          //return object
+          return {
+            id: `vec-${Date.now()}-${i}-${idx}`,
+            values: embedding,
+            metadata: {
+              text: doc.pageContent,
+              source: "yoga_guide.pdf",
+              chunk: i + idx,
+              page: doc.metadata.loc?.pageNumber || 0,
+            },
+          };
+        })
+      );
 
-    await pinecone.Index(process.env.PINECONE_INDEX_NAME!).upsert(vectors);
+      vectors.push(...batchEmbeddings);
+      console.log(`Processed batch ${i / BATCH_SIZE + 1}`);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Rate limiting
+    }
+
+    // Upsert to Pinecone in batches
+    const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
+    for (let i = 0; i < vectors.length; i += 100) {
+      await index.upsert(vectors.slice(i, i + 100));
+    }
 
     return NextResponse.json({
       success: true,
-      chunks: docs.length,
+      chunks: yogaContent.length,
       vectors: vectors.length,
     });
   } catch (error) {
