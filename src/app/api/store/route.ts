@@ -8,7 +8,7 @@ import {
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 const BATCH_SIZE = 10;
 
 export async function POST(request: Request) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
     });
-    
+
     //initialise google gen ai
     const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY!,
