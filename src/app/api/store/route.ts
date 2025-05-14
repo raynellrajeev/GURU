@@ -3,7 +3,10 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { NextResponse } from "next/server";
 import { embedMany } from "ai";
-import { google } from "@ai-sdk/google";
+import {
+  createGoogleGenerativeAI,
+  GoogleGenerativeAIProvider,
+} from "@ai-sdk/google";
 
 export const runtime = "edge";
 const BATCH_SIZE = 10;
@@ -13,6 +16,11 @@ export async function POST(request: Request) {
     // Initialize Pinecone
     const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
+    });
+    
+    //initialise google gen ai
+    const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY!,
     });
 
     // Load and split the document

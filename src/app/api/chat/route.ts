@@ -1,6 +1,5 @@
 import { Pinecone } from "@pinecone-database/pinecone";
-import { pipeline } from "@xenova/transformers";
-import { streamText, LanguageModelV1 } from "ai";
+import { streamText, LanguageModelV1, embed } from "ai";
 import {
   createGoogleGenerativeAI,
   GoogleGenerativeAIProvider,
@@ -22,12 +21,12 @@ export async function POST(request: Request) {
     // Pinecone + Embeddings
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
     
-    const embedder = await pipeline(
-      "feature-extraction",
-      "Xenova/all-MiniLM-L6-v2"
-    );
-    const { data } = await embedder(latestMessage, { pooling: "mean" });
-    const queryVector = Array.from(data);
+    const { embedding: queryVector } = await embed({
+      model: google.textEmbeddingModel("text-embedding-004", {
+        taskType: "RETRIEVAL_QUERY",
+      }),
+      value: latestMessage,
+    });
 
     const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
     const results = await index.query({
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
     }));
 
     // Generate streaming response using Google Gen AI via AI SDK
-    const stream = await streamText({
+    const stream = streamText({
       model: model,
       system: "You are GURU, a yoga expert assistant.",
       prompt: prompt,
