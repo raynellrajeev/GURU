@@ -18,28 +18,25 @@
     --foreground: #ededed;
   }
 }
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 5px;
-}
+} */
 
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 20px;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   border-radius: 20px;
   transition: background 0.3s, width 0.3s;
-}
+} */
 html {
   scroll-behavior: smooth;
 }
-body {
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -49,11 +46,6 @@ body {
 * {
   border-color: var(--border);
   outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
-}
-
-body {
-  background-color: var(--background);
-  color: var(--foreground);
 }
 
 /* Loading animation utility */

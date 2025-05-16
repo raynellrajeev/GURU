@@ -54,50 +54,21 @@ export async function POST(request: Request) {
       - Use bullet points and subheadings for clarity
       - add an empty line after each paragraph
       - Correct Sanskrit names in *italics*
-      - Safety precautions 
-      - Beginner modifications
-
+      
       Question: ${latestMessage}`;
-
-    // Prepare sources data
-    const sources = results.matches.map((m) => ({
-      text: `${m.metadata?.text ?? ""}`.substring(0, 100) + "...",
-      score: m.score,
-    }));
 
     // Generate streaming response using Google Gen AI via AI SDK
     const stream = streamText({
       model: model,
-      system: "You are GURU, a yoga expert assistant.",
+      system: "You are GURU, a yoga master.",
       prompt: prompt,
       temperature: 0.7,
       maxTokens: 5000,
-    }) ;
-
-    // Create a TransformStream to append sources
-    const transformStream = new TransformStream({
-      transform(chunk, controller) {
-        // Pass through text stream chunks unchanged
-        controller.enqueue(chunk);
-      },
-      flush(controller) {
-        // Append sources as a data chunk
-        controller.enqueue(
-          new TextEncoder().encode(`data:${JSON.stringify({ sources })}\n\n`)
-        );
-      },
     });
-
-    // Get the base stream response and pipe through transform
-    const baseResponse = stream.toDataStreamResponse();
-    const streamResponse = baseResponse.body!.pipeThrough(transformStream);
-
-    // Return the transformed stream
-    return new Response(streamResponse, {
+    
+    return new Response(stream.toDataStream(), {
       headers: {
-        "Content-Type": "text/event-stream",
-        // "Cache-Control": "no-cache",
-        Connection: "keep-alive",
+        "Content-Type": "text/plain",
       },
     });
   } catch (error) {

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GURU",
   description:
-    "A  Yoga chatbot based on the book 'Yoga Mudras for Physical and Mental Healthcare' written by Dr.S.N. Kumar and Dr.A.Jaiganesh. Offering personalized guidance on asanas, meditation, and wellness. Find balance, flexibility, and mindfulness anytime, anywhere.",
+    "A Yoga chatbot based on the book 'Yoga Mudras for Physical and Mental Healthcare' written by Dr.S.N. Kumar and Dr.A.Jaiganesh. Offering personalized guidance on asanas, meditation, and wellness. Find balance, flexibility, and mindfulness anytime, anywhere.",
   keywords:
     "yoga, meditation, wellness, AI chatbot, personalized guidance, mindfulness, yoga poses, health",
   authors: [{ name: "Raynell Rajeev" }], 
