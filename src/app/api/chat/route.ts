@@ -52,7 +52,6 @@ export async function POST(request: Request) {
       Respond with markdown formatting with line break after every paragraph and follow this structure :
       
       - Use bullet points and subheadings for clarity
-      - add an empty line after each paragraph
       - Correct Sanskrit names in *italics*
       
       Question: ${latestMessage}`;
