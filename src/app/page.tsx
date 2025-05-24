@@ -9,8 +9,6 @@ import LoadingBubble from "../components/LoadingBubble";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 
 export default function Home() {
-  const [error, setError] = useState<Error | null>(null);
-
   const {
     append,
     status,
@@ -19,13 +17,7 @@ export default function Home() {
     handleInputChange,
     handleSubmit,
     data,
-  } = useChat({
-    api: "/api/chat",
-    onError: (err) => {
-      console.error("Frontend error:", err);
-      setError(err);
-    },
-  });
+  } = useChat({ api: "/api/chat" });
 
   const noMessages = !messages || messages.length === 0;
 
@@ -41,29 +33,16 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-row font-[family-name:var(--font-geist-mono)] m-0 p-0 bg-neutral-900 h-screen items-center justify-center w-full text-white">
+    <main className="flex font-[family-name:var(--font-geist-mono)] m-0 p-0 bg-neutral-900 h-screen items-center justify-center w-full text-white ">
       <section
-        className={`flex flex-col justify-center gap-6 overflow-y-scroll h-full py-8 px-2 w-3/5 ${
+        className={`flex flex-col justify-center gap-6 h-full py-8 px-2 w-4/5 ${
           noMessages ? "" : "justify-end"
         }`}
       >
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            <strong>Error:</strong> {error.message}
-            <button
-              type="button"
-              onClick={() => setError(null)}
-              className="absolute top-0 right-0 px-2 py-1"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
         {noMessages ? (
           <>
-            <div className="flex items-center justify-center">
-              <h1 className="text-4xl">GURU</h1>
+            <div className="flex text-4xl items-center justify-center">
+              GURU
             </div>
             <PromptSuggestionRow onPromptClick={handlePromptClick} />
           </>
@@ -85,7 +64,7 @@ export default function Home() {
             )}
           </>
         )}
-        
+
         {/* input section */}
         <form onSubmit={handleSubmit} className="w-full flex gap-1.5 mt-4">
           <input
@@ -103,7 +82,7 @@ export default function Home() {
             }
             className={`rounded-full p-2 ${
               status === "submitted" || status === "streaming"
-                ? "bg-neutral-400 cursor-not-allowed"
+                ? "bg-neutral-500 cursor-not-allowed"
                 : "bg-neutral-300 hover:bg-white"
             }`}
             disabled={status === "submitted" || status === "streaming"}

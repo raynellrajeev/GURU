@@ -35,8 +35,10 @@ export async function POST(request: Request) {
     // Filter unwanted chunks
     const yogaContent = docs.filter(
       (doc) =>
+        !doc.pageContent.toLowerCase().includes("table of contents") &&
         !doc.pageContent.toLowerCase().includes("copyright") &&
-        !doc.pageContent.toLowerCase().includes("all rights reserved")
+        !doc.pageContent.toLowerCase().includes("all rights reserved") &&
+        !doc.pageContent.toLowerCase().includes("preface")
     );
 
     const vectors = [];

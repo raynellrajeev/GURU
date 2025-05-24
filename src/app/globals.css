@@ -30,7 +30,7 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  border-radius: 20px;
+  border-radius: 50px;
   transition: background 0.3s, width 0.3s;
 }
 html {
