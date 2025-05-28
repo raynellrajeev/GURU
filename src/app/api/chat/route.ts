@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     });
     const model: LanguageModelV1 = google("gemini-1.5-flash");
 
-    // Classify the message 
+    // Classify the message
     const classificationPrompt = `
       Classify the user message into one of these categories:
       - General: For greetings, small talk, or generic conversation.
@@ -40,17 +40,17 @@ export async function POST(request: Request) {
     const label = classificationResult.text.trim().toUpperCase();
     console.log("Message classified as:", label);
 
-    // Step 2: Handle General directly
+    // Handle General directly
     if (label === "General") {
-      const chitchatPrompt = `You are GURU, a warm and wise yoga master.
+      const generalPrompt = `You are GURU, a warm and wise yoga master.
         Respond naturally to the following casual message:
         "${latestMessage}"`;
 
       const stream = streamText({
         model: model,
         system: "You are GURU, a yoga master.",
-        prompt: chitchatPrompt,
-        temperature: 0.8,
+        prompt: generalPrompt,
+        temperature: 0.7,
         maxTokens: 1000,
       });
 
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Step 3: Otherwise, process as yoga query using RAG
+    // Otherwise, process as yoga query using RAG
 
     // Pinecone + Embeddings
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
@@ -80,9 +80,19 @@ export async function POST(request: Request) {
       includeMetadata: true,
     });
 
+    console.log(
+      "Top Matches:",
+      results.matches.map((m) => ({
+        score: m.score,
+        text: (m.metadata?.text as string)?.slice(0, 100),
+      }))
+    );
+
+
+
     // Build prompt from context
     const context = results.matches
-      .filter((m) => (m.score ?? 0) > 0.75)
+      .filter((m) => (m.score ?? 0) > 0.3)
       .filter(
         (m) =>
           typeof m.metadata?.text === "string" && m.metadata.text.length > 50
@@ -90,11 +100,9 @@ export async function POST(request: Request) {
       .map((m) => m.metadata!.text as string)
       .join("\n---\n");
 
-
     const prompt = `You are GURU, a yoga master.
       You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga — including asanas (postures), pranayama (breath control), dhyana (meditation), philosophy, and Ayurvedic wellness.
-
-      Use this context and ONLY answer based on the provided context:
+      Answer the question using the knowledge shared below. If you do not find the answer there, simply say you do not know:
       ${context}
 
       Question: ${latestMessage}`;
@@ -105,6 +113,7 @@ export async function POST(request: Request) {
       prompt: prompt,
       temperature: 0.7,
       maxTokens: 5000,
+      maxRetries: 3,
     });
 
     return new Response(stream.toDataStream(), {

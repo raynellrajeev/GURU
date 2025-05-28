@@ -30,16 +30,14 @@ export async function POST(request: Request) {
       chunkOverlap: 200,
     });
 
-    const docs = await splitter.splitDocuments(await loader.load());
+    const yogaContent = await splitter.splitDocuments(await loader.load());
 
     // Filter unwanted chunks
-    const yogaContent = docs.filter(
-      (doc) =>
-        !doc.pageContent.toLowerCase().includes("table of contents") &&
-        !doc.pageContent.toLowerCase().includes("copyright") &&
-        !doc.pageContent.toLowerCase().includes("all rights reserved") &&
-        !doc.pageContent.toLowerCase().includes("preface")
-    );
+    // const yogaContent = docs.filter(
+    //   (doc) =>
+    //     !doc.pageContent.toLowerCase().includes("table of contents") &&
+    //     !doc.pageContent.toLowerCase().includes("copyright")
+    // );
 
     const vectors = [];
 
