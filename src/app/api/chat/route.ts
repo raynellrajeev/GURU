@@ -107,14 +107,27 @@ export async function POST(request: Request) {
 
       Question: ${latestMessage}`;
 
-    const stream = streamText({
-      model: model,
-      system: "You are GURU, a yoga master.",
-      prompt: prompt,
-      temperature: 0.7,
-      maxTokens: 5000,
-      maxRetries: 3,
-    });
+    let stream;
+    try {
+      stream = streamText({
+        model: model,
+        system: "You are GURU, a yoga master.",
+        prompt: prompt,
+        temperature: 0.7,
+        maxTokens: 5000,
+        maxRetries: 3,
+      });
+    } catch (err) {
+      console.error("Gemini API Timeout or Error:", err);
+      return new Response(
+        "GURU is meditating right now and cannot respond. Please try again shortly.",
+        {
+          status: 503,
+          headers: { "Content-Type": "text/plain" },
+        }
+      );
+    }
+
 
     return new Response(stream.toDataStream(), {
       headers: {
