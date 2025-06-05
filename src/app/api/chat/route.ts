@@ -10,7 +10,6 @@ import {
   createGoogleGenerativeAI,
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
-import { GoogleAICacheManager } from "@google/generative-ai/server";
 
 export async function POST(request: Request) {
   try {
@@ -21,11 +20,7 @@ export async function POST(request: Request) {
     console.log("Processing query:", latestMessage);
 
     // Setup Google Gemini
-    const cacheManager = new GoogleAICacheManager(
-      process.env.GEMINI_API_KEY!
-    );
-
-    const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
+      const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY!,
     });
     const model: LanguageModelV1 = google("gemini-1.5-flash-001", {
