@@ -1,9 +1,16 @@
 import { Pinecone } from "@pinecone-database/pinecone";
-import { streamText, embed, generateText, LanguageModelV1 } from "ai";
+import {
+  streamText,
+  embed,
+  generateText,
+  type LanguageModelV1,
+  smoothStream,
+} from "ai";
 import {
   createGoogleGenerativeAI,
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
+import { GoogleAICacheManager } from "@google/generative-ai/server";
 
 export async function POST(request: Request) {
   try {
@@ -14,10 +21,33 @@ export async function POST(request: Request) {
     console.log("Processing query:", latestMessage);
 
     // Setup Google Gemini
+    const cacheManager = new GoogleAICacheManager(
+      process.env.GEMINI_API_KEY!
+    );
+
     const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY!,
     });
-    const model: LanguageModelV1 = google("gemini-1.5-flash");
+    const model: LanguageModelV1 = google("gemini-1.5-flash-001", {
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_LOW_AND_ABOVE",
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_LOW_AND_ABOVE",
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_LOW_AND_ABOVE",
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_LOW_AND_ABOVE",
+        },
+      ],
+    });
 
     // Classify the message
     const classificationPrompt = `
@@ -50,7 +80,7 @@ export async function POST(request: Request) {
         model: model,
         system: "You are GURU, a yoga master.",
         prompt: generalPrompt,
-        temperature: 0.7,
+        temperature: 0.5,
         maxTokens: 1000,
       });
 
@@ -88,8 +118,6 @@ export async function POST(request: Request) {
       }))
     );
 
-
-
     // Build prompt from context
     const context = results.matches
       .filter((m) => (m.score ?? 0) > 0.3)
@@ -102,7 +130,8 @@ export async function POST(request: Request) {
 
     const prompt = `You are GURU, a yoga master.
       You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga — including asanas (postures), pranayama (breath control), dhyana (meditation), philosophy, and Ayurvedic wellness.
-      Answer the question using the knowledge shared below. If you do not find the answer there, simply say you do not know:
+
+      Answer the question using the knowledge shared below, as naturally as possible. Speak like you're sharing wisdom, not quoting a textbook. If you do not find the answer there, simply say you do not know:
       ${context}
 
       Question: ${latestMessage}`;
@@ -113,6 +142,9 @@ export async function POST(request: Request) {
         model: model,
         system: "You are GURU, a yoga master.",
         prompt: prompt,
+        experimental_transform: smoothStream({
+          delayInMs: 50, // optional: defaults to 10ms 
+        }),
         temperature: 0.7,
         maxTokens: 5000,
         maxRetries: 3,
