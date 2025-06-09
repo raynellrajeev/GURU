@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
+import { useSessionMemory } from "../hooks/useSessionMemory";
 import { useChat, Message } from "@ai-sdk/react";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import Bubble from "../components/Bubble";
@@ -16,7 +17,10 @@ export default function Home() {
     input,
     handleInputChange,
     handleSubmit,
+    setMessages
   } = useChat({ api: "/api/chat" });
+
+  const { clearMemory } = useSessionMemory(messages, setMessages);
 
   const noMessages = !messages || messages.length === 0;
 
@@ -33,6 +37,23 @@ export default function Home() {
 
   return (
     <main className="flex font-[family-name:var(--font-geist-mono)] m-0 p-0 bg-neutral-900 h-screen items-center justify-center w-full text-white ">
+      {!noMessages && (
+        <header className="bg-neutral-900">
+          <button
+            type="button"
+            className="absolute top-4 right-4 bg-neutral-700 text-white text-sm px-4 py-2 rounded-2xl hover:bg-red-800"
+            onClick={() => clearMemory()}
+          >
+            Clear Chat
+          </button>
+          <div
+            className="absolute top-4 left-4 text-white text-md px-4 py-2 font-bold"
+          >
+            GURU
+          </div>
+        </header>
+      )}
+
       <section
         className={`flex flex-col justify-center gap-6 h-full py-8 px-2 w-4/5 ${
           noMessages ? "" : "justify-end"
