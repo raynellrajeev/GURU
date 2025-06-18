@@ -21,9 +21,10 @@ export async function POST(request: Request) {
 
     // Setup Google Gemini
       const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
-      apiKey: process.env.GEMINI_API_KEY!,
-    });
-    const model: LanguageModelV1 = google("gemini-1.5-flash-001", {
+        apiKey: process.env.GEMINI_API_KEY!,
+        baseURL: "https://generativelanguage.googleapis.com/v1beta",
+      });
+    const model: LanguageModelV1 = google("gemini-1.5-flash", {
       safetySettings: [
         {
           category: "HARM_CATEGORY_HARASSMENT",
