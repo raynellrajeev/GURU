@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React from "react";
 import { useSessionMemory } from "../hooks/useSessionMemory";
 import { useChat, Message } from "@ai-sdk/react";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -8,6 +8,7 @@ import Bubble from "../components/Bubble";
 import PromptSuggestionRow from "../components/PromptSuggestionRow";
 import LoadingBubble from "../components/LoadingBubble";
 import MarkdownRenderer from "../components/MarkdownRenderer";
+import Header from "../components/Header"
 
 export default function Home() {
   const {
@@ -38,20 +39,7 @@ export default function Home() {
   return (
     <main className="flex font-[family-name:var(--font-geist-mono)] m-0 p-0 bg-neutral-900 h-screen items-center justify-center w-full text-white ">
       {!noMessages && (
-        <header className="bg-neutral-900">
-          <button
-            type="button"
-            className="absolute top-4 right-4 bg-neutral-700 text-white text-sm px-4 py-2 rounded-2xl hover:bg-red-800"
-            onClick={() => clearMemory()}
-          >
-            Clear Chat
-          </button>
-          <div
-            className="absolute top-4 left-4 text-white text-md px-4 py-2 font-bold"
-          >
-            GURU
-          </div>
-        </header>
+        <Header clearMemory={clearMemory} />
       )}
 
       <section
