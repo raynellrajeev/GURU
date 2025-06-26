@@ -6,7 +6,7 @@ export default function Bubble({ message }: { message: Message }) {
     <div
       className={`m-2 p-2 text-sm border-0 px-2.5  overflow-y-scroll rounded-xl ml-auto ${
         role === "user" &&
-        "rounded-br-none text-right bg-neutral-700 text-white"
+        "rounded-br-none text-center bg-purple-900 text-white"
       } ${
         role === "assistant" && "text-justify"
       }`}

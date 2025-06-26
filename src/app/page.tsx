@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React from "react";
+import { motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 import { useSessionMemory } from "../hooks/useSessionMemory";
 import { useChat, Message } from "@ai-sdk/react";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -8,7 +9,7 @@ import Bubble from "../components/Bubble";
 import PromptSuggestionRow from "../components/PromptSuggestionRow";
 import LoadingBubble from "../components/LoadingBubble";
 import MarkdownRenderer from "../components/MarkdownRenderer";
-import Header from "../components/Header"
+import Header from "../components/Header";
 
 export default function Home() {
   const {
@@ -18,12 +19,18 @@ export default function Home() {
     input,
     handleInputChange,
     handleSubmit,
-    setMessages
+    setMessages,
   } = useChat({ api: "/api/chat" });
 
   const { clearMemory } = useSessionMemory(messages, setMessages);
-
   const noMessages = !messages || messages.length === 0;
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handlePromptClick = (promptText: string) => {
     const msg: Message = {
@@ -37,25 +44,57 @@ export default function Home() {
   };
 
   return (
-    <main className="flex font-[family-name:var(--font-geist-mono)] m-0 p-0 bg-neutral-900 h-screen items-center justify-center w-full text-white ">
-      {!noMessages && (
-        <Header clearMemory={clearMemory} />
-      )}
+    <main className="flex flex-col h-screen w-full bg-neutral-900 text-white font-[family-name:var(--font-geist-mono)]">
+      {!noMessages && <Header clearMemory={clearMemory} />}
 
-      <section
-        className={`flex flex-col justify-center gap-6 h-full py-8 px-2 w-4/5 ${
-          noMessages ? "" : "justify-end"
-        }`}
-      >
-        {noMessages ? (
-          <>
-            <div className="flex text-4xl items-center justify-center">
-              GURU
-            </div>
+      {noMessages ? (
+        // Centered layout for initial screen
+        <div className="flex flex-col justify-center items-center grow w-full px-4 py-6">
+          <div
+            className="text-4xl font-semibold mb-6"
+          >
+            GURU
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
             <PromptSuggestionRow onPromptClick={handlePromptClick} />
-          </>
-        ) : (
-          <>
+          </motion.div>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-5xl flex gap-1.5 mt-10"
+          >
+            <input
+              type="text"
+              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl focus:outline-none focus:ring-1 focus:ring-neutral-300"
+              placeholder="Ask GURU..."
+              onChange={handleInputChange}
+              value={input}
+              disabled={status === "submitted" || status === "streaming"}
+            />
+            <button
+              title="Send"
+              type="submit"
+              className={`rounded-full p-2 ${
+                status === "submitted" || status === "streaming"
+                  ? "bg-neutral-500 cursor-not-allowed"
+                  : "bg-purple-900 hover:bg-purple-950"
+              }`}
+              disabled={status === "submitted" || status === "streaming"}
+            >
+              <SendRoundedIcon style={{ color: "white" }} />
+            </button>
+          </form>
+        </div>
+      ) : (
+        // Chat layout with scrollable messages and input at bottom
+        <>
+          <div
+            ref={scrollRef}
+            className="flex flex-col grow overflow-y-auto px-4 py-6 w-full max-w-5xl mx-auto"
+          >
             {messages.map((message, index) => (
               <div key={`message-${index}`} className="flex flex-col gap-2">
                 {message.role === "user" ? (
@@ -70,35 +109,35 @@ export default function Home() {
             {(status === "submitted" || status === "streaming") && (
               <LoadingBubble />
             )}
-          </>
-        )}
+          </div>
 
-        {/* input section */}
-        <form onSubmit={handleSubmit} className="w-full flex gap-1.5 mt-4">
-          <input
-            type="text"
-            className="flex-1 bg-neutral-700 text-white text-lg px-4 rounded-2xl focus:outline-none focus:ring-1 focus:ring-neutral-300 h-auto"
-            placeholder="Ask GURU..."
-            onChange={handleInputChange}
-            value={input}
-            disabled={status === "submitted" || status === "streaming"}
-          />
-          <button
-            type="submit"
-            aria-label={
-              status === "submitted" || status === "streaming" ? "Stop" : "Send"
-            }
-            className={`rounded-full p-2 ${
-              status === "submitted" || status === "streaming"
-                ? "bg-neutral-500 cursor-not-allowed"
-                : "bg-neutral-300 hover:bg-white"
-            }`}
-            disabled={status === "submitted" || status === "streaming"}
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-5xl mx-auto px-4 py-3 flex gap-1.5"
           >
-            <SendRoundedIcon style={{ color: "black" }} />
-          </button>
-        </form>
-      </section>
+            <input
+              type="text"
+              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl focus:outline-none focus:ring-1 focus:ring-neutral-300"
+              placeholder="Ask GURU..."
+              onChange={handleInputChange}
+              value={input}
+              disabled={status === "submitted" || status === "streaming"}
+            />
+            <button
+              title="Send"
+              type="submit"
+              className={`rounded-full p-2 ${
+                status === "submitted" || status === "streaming"
+                  ? "bg-neutral-500 cursor-not-allowed"
+                  : "bg-purple-900 hover:bg-purple-950"
+              }`}
+              disabled={status === "submitted" || status === "streaming"}
+            >
+              <SendRoundedIcon style={{ color: "white" }} />
+            </button>
+          </form>
+        </>
+      )}
     </main>
   );
 }

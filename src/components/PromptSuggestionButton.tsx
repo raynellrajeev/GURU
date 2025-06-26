@@ -11,7 +11,7 @@ export default function PromptSuggestionButton({
     <button
       type="button"
       onClick={onClick}
-      className="border border-neutral-500 p-2 m-2 text-sm rounded-xl hover:bg-neutral-800"
+      className="border border-neutral-500 p-2 m-2 text-sm rounded-xl hover:bg-purple-950"
       aria-label="Prompt suggestion button"
     >
       {text}

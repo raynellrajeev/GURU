@@ -8,7 +8,7 @@ interface MarkdownRendererProps {
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
-    <div className="prose prose-invert max-w-none text-white text-justify">
+    <div className="prose prose-invert max-w-none text-white text-justify mt-1 mb-1">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
     </div>
   );
