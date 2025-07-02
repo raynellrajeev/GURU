@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col h-screen w-full bg-neutral-900 text-white font-[family-name:var(--font-geist-mono)]">
+    <main className="flex flex-col h-screen w-full bg-neutral-800 text-white font-[family-name:var(--font-geist-mono)]">
       {!noMessages && <Header clearMemory={clearMemory} />}
 
       {noMessages ? (
@@ -68,7 +68,7 @@ export default function Home() {
           >
             <input
               type="text"
-              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl focus:outline-none focus:ring-1 focus:ring-neutral-300"
+              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl focus:outline-none focus:ring-1 focus:ring-purple-800"
               placeholder="Ask GURU..."
               onChange={handleInputChange}
               value={input}
@@ -80,7 +80,7 @@ export default function Home() {
               className={`rounded-full p-2 ${
                 status === "submitted" || status === "streaming"
                   ? "bg-neutral-500 cursor-not-allowed"
-                  : "bg-purple-900 hover:bg-purple-950"
+                  : "bg-purple-900 hover:bg-purple-800"
               }`}
               disabled={status === "submitted" || status === "streaming"}
             >
@@ -93,7 +93,7 @@ export default function Home() {
         <>
           <div
             ref={scrollRef}
-            className="flex flex-col grow overflow-y-auto px-4 py-6 w-full max-w-5xl mx-auto"
+            className="flex flex-col grow overflow-y-auto px-4 py-6 w-full max-w-5xl mx-auto pt-20"
           >
             {messages.map((message, index) => (
               <div key={`message-${index}`} className="flex flex-col gap-2">
@@ -117,7 +117,7 @@ export default function Home() {
           >
             <input
               type="text"
-              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl focus:outline-none focus:ring-1 focus:ring-neutral-300"
+              className="flex-1 bg-neutral-700 text-white text-lg px-4 py-2 rounded-3xl shadow-2xl focus:outline-none focus:ring-1 focus:ring-purple-800"
               placeholder="Ask GURU..."
               onChange={handleInputChange}
               value={input}
@@ -129,7 +129,7 @@ export default function Home() {
               className={`rounded-full p-2 ${
                 status === "submitted" || status === "streaming"
                   ? "bg-neutral-500 cursor-not-allowed"
-                  : "bg-purple-900 hover:bg-purple-950"
+                  : "bg-purple-900 hover:bg-purple-800"
               }`}
               disabled={status === "submitted" || status === "streaming"}
             >
