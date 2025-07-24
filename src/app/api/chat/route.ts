@@ -5,25 +5,42 @@ import {
   generateText,
   type LanguageModelV1,
   smoothStream,
+  Message,
 } from "ai";
 import {
   createGoogleGenerativeAI,
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
+import summarizeMessages from "@/lib/summarizeMessages";
 
 export async function POST(request: Request) {
   try {
     const { messages } = await request.json();
     if (!messages?.length) throw new Error("No messages provided");
 
+    // logging the latest message
     const latestMessage = messages[messages.length - 1].content;
     console.log("Processing query:", latestMessage);
 
+    // summarize chat history
+    let chatHistory = messages;
+    // If the conversation is too long, summarize the first N messages
+    if (messages.length > 20) {
+      const summary = await summarizeMessages(messages.slice(0, -10)); // summarize older ones
+      chatHistory = [
+        {
+          role: "system",
+          content: `Summary of earlier conversation: ${summary}`,
+        },
+        ...messages.slice(-10), // keep latest intact
+      ];
+    }
+
     // Setup Google Gemini
-      const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
-        apiKey: process.env.GEMINI_API_KEY!,
-        baseURL: "https://generativelanguage.googleapis.com/v1beta",
-      });
+    const google: GoogleGenerativeAIProvider = createGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY!,
+      baseURL: "https://generativelanguage.googleapis.com/v1beta",
+    });
     const model: LanguageModelV1 = google("gemini-1.5-flash", {
       safetySettings: [
         {
@@ -45,7 +62,7 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Classify the message
+    // Classify the latest message
     const classificationPrompt = `
       Classify the user message into one of these categories:
       - General: For greetings, small talk, or generic conversation.
@@ -54,7 +71,7 @@ export async function POST(request: Request) {
       Only respond with the label: General or YOGA_QUERY.
 
       User Message: "${latestMessage}"
-`;
+      `;
 
     const classificationResult = await generateText({
       model: model,
@@ -68,16 +85,28 @@ export async function POST(request: Request) {
 
     // Handle General directly
     if (label === "General") {
-      const generalPrompt = `You are GURU, a warm and wise yoga master.
-        Respond naturally to the following casual message:
-        "${latestMessage}"`;
+      const generalPrompt = `
+      Respond naturally to the following casual message in context of the full conversation :
+      
+      Conversation so far:
+      ${chatHistory
+        .map((m: Message) => `${m.role.toUpperCase()}: ${m.content}`)
+        .join("\n")}
+      
+      Question: ${latestMessage}
+      `;
 
       const stream = streamText({
         model: model,
-        system: "You are GURU, a yoga master.",
+        system:
+          "You are GURU, a warm and wise yoga master. You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga.",
         prompt: generalPrompt,
-        temperature: 0.5,
-        maxTokens: 1000,
+        experimental_transform: smoothStream({
+          delayInMs: 50, // optional: defaults to 10ms
+        }),
+        temperature: 0.7,
+        maxTokens: 5000,
+        maxRetries: 3,
       });
 
       return new Response(stream.toDataStream(), {
@@ -105,7 +134,7 @@ export async function POST(request: Request) {
       topK: 3,
       includeMetadata: true,
     });
-
+    // log top retrieved matches
     console.log(
       "Top Matches:",
       results.matches.map((m) => ({
@@ -124,22 +153,29 @@ export async function POST(request: Request) {
       .map((m) => m.metadata!.text as string)
       .join("\n---\n");
 
-    const prompt = `You are GURU, a yoga master.
-      You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga — including asanas (postures), pranayama (breath control), dhyana (meditation), philosophy, and Ayurvedic wellness.
-
+    const prompt = `
       Answer the question using the knowledge shared below, as naturally as possible. Speak like you're sharing wisdom, not quoting a textbook. If you do not find the answer there, simply say you do not know:
+
+      Relevent Yoga Knowledge:
       ${context}
 
+      Conversation so far:
+      ${chatHistory
+        .map((m: Message) => `${m.role.toUpperCase()}: ${m.content}`)
+        .join("\n")}
+        
+      Respond to the question in context of the full conversation and the retrieved knowledge:
+      
       Question: ${latestMessage}`;
 
     let stream;
     try {
       stream = streamText({
         model: model,
-        system: "You are GURU, a yoga master.",
+        system: "You are GURU, a warm and wise yoga master. You are a legendary and wise yoga master who has devoted lifetimes to the study, practice, and teaching of yoga. You possess deep knowledge of all aspects of yoga.",
         prompt: prompt,
         experimental_transform: smoothStream({
-          delayInMs: 50, // optional: defaults to 10ms 
+          delayInMs: 50, // optional: defaults to 10ms
         }),
         temperature: 0.7,
         maxTokens: 5000,
@@ -155,7 +191,6 @@ export async function POST(request: Request) {
         }
       );
     }
-
 
     return new Response(stream.toDataStream(), {
       headers: {
