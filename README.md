@@ -16,9 +16,7 @@ GURU is an AI-powered yoga chatbot that provides personalized guidance on asanas
 - **Next.js**: A React framework for building server-side rendered applications.
 - **Vercel AI SDK**: Simplifies AI integration for building conversational interfaces.
 - **Pinecone**: A vector database for efficient similarity search and embeddings storage.
-- **GroqCloud**:A high-performance AI inference service with an ultra-fast Language Processing Unit, provides fast, low latency API access to state-of-the-art models.
 - **LangChain**: For document loading and text splitting.
-- **Hugging Face Transformers**: For generating embeddings using pre-trained models.
 - **Tailwind CSS**: A utility-first CSS framework for styling the application.
 - **React Markdown**: For rendering markdown content in the chat interface.
 
@@ -46,8 +44,6 @@ To get started with GURU, follow these steps:
    PINECONE_API_KEY=your_pinecone_api_key
    PINECONE_INDEX_NAME=your_pinecone_index_name
    PINECONE_ENVIRONMENT=your_pinecone_environment
-   HUGGINGFACE_API_KEY=your_hf_api_key
-   GROQ_API_KEY=your_groq_api_key
    ```
 
 ## Getting Started
@@ -94,9 +90,7 @@ To learn more about the technologies used in this project, check out the followi
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
 - [Vercel AI SDK Documentation](https://vercel.com/docs/ai) - Learn how to integrate AI into your applications.
 - [Pinecone Documentation](https://docs.pinecone.io/) - Learn about vector databases and similarity search.
-- [Groq Documentation](https://groq.dev/) - Learn about querying and data handling with Groq.
 - [LangChain Documentation](https://docs.langchain.com/) - Learn about text processing and embeddings.
-- [Hugging Face Transformers](https://huggingface.co/docs/transformers/) - Learn about pre-trained models for NLP tasks.
 
 ## Usage
 
