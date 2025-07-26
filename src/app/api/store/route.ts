@@ -8,10 +8,10 @@ import {
   GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
 
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
 const BATCH_SIZE = 10;
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
     // Initialize Pinecone
     const pinecone = new Pinecone({
