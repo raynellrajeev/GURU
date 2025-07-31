@@ -10,6 +10,7 @@ import PromptSuggestionRow from "../components/PromptSuggestionRow";
 import LoadingBubble from "../components/LoadingBubble";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import Header from "../components/Header";
+import Divider from "@mui/material/Divider";
 
 export default function Home() {
   const {
@@ -50,11 +51,7 @@ export default function Home() {
       {noMessages ? (
         // Centered layout for initial screen
         <div className="flex flex-col justify-center items-center grow w-full px-4 py-6">
-          <div
-            className="text-4xl font-semibold mb-6"
-          >
-            GURU
-          </div>
+          <div className="text-4xl font-semibold mb-6">GURU</div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,6 +99,15 @@ export default function Home() {
                 ) : (
                   <div className="p-4 rounded-xl text-white">
                     <MarkdownRenderer content={message.content} />
+                    {status !== "streaming" && <Divider
+                      variant="middle"
+                      sx={{
+                        margin: "30px",
+                        backgroundColor: "#404040",
+                        height: "2px",
+                        borderRadius: "10px",
+                      }}
+                    />}
                   </div>
                 )}
               </div>
