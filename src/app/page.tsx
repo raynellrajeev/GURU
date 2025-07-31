@@ -81,7 +81,7 @@ export default function Home() {
                 status === "submitted" || status === "streaming"
                   ? "bg-neutral-500 cursor-not-allowed"
                   : "bg-purple-900 hover:bg-purple-800"
-              }`}
+              } transition-colors duration-250`}
               disabled={status === "submitted" || status === "streaming"}
             >
               <SendRoundedIcon style={{ color: "white" }} />
