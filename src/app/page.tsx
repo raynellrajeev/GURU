@@ -99,15 +99,15 @@ export default function Home() {
                 ) : (
                   <div className="p-4 rounded-xl text-white">
                     <MarkdownRenderer content={message.content} />
-                    {status !== "streaming" && <Divider
+                    <Divider
                       variant="middle"
                       sx={{
-                        margin: "30px",
+                        margin: "40px",
                         backgroundColor: "#404040",
                         height: "2px",
                         borderRadius: "10px",
                       }}
-                    />}
+                    />
                   </div>
                 )}
               </div>
